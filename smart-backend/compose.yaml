@@ -1,0 +1,16 @@
+services:
+  mysql:
+    container_name: 'todo_smart_db_container'
+    networks:
+      - 'todo_network'
+    image: 'mysql:5.7'
+    environment:
+      - 'MYSQL_DATABASE=todo_smart_db'
+      - 'MYSQL_ROOT_PASSWORD=root'
+    ports:
+      - '3306:3306'
+
+networks:
+  todo_network:
+    driver: 'bridge'
+
