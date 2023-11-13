@@ -16,6 +16,11 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
+    public User getUserById(String userId) {
+        return this.userRepository.findById(Long.valueOf(userId))
+                .orElseThrow(NotFoundException::new);
+    }
+
     public User create(User userToCreate) {
         return this.userRepository.save(userToCreate);
     }
@@ -40,12 +45,11 @@ public class UserService {
         return userExists;
     }
 
-    public User getUserByEmail(String email) {
-        return this.userRepository.findByEmail(email).orElseThrow(NotFoundException::new);
+    public void remove(String userId) {
+        this.userRepository.deleteById(Long.valueOf(userId));
     }
 
-    public User getUserById(String userId) {
-        return this.userRepository.findById(Long.valueOf(userId))
-                .orElseThrow(NotFoundException::new);
+    public User getUserByEmail(String email) {
+        return this.userRepository.findByEmail(email).orElseThrow(NotFoundException::new);
     }
 }

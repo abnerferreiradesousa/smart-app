@@ -18,6 +18,14 @@ public class UserController {
         this.userService = userService;
     }
 
+    @GetMapping("{userId}")
+    public ResponseEntity<User> getUserById(@PathVariable String userId) {
+        User userFounded = this.userService.getUserById(userId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(userFounded);
+    }
+
     @PostMapping
     public ResponseEntity<User> create(@RequestBody User userToCreate) {
         User userCreated = this.userService.create(userToCreate);
@@ -40,5 +48,11 @@ public class UserController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(userUpdated);
+    }
+
+    @DeleteMapping("{userId}")
+    public ResponseEntity<Void> remove(@PathVariable String userId) {
+        this.userService.remove(userId);
+        return ResponseEntity.noContent().build();
     }
 }
