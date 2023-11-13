@@ -22,16 +22,13 @@ public class UserService {
 
     public User login(User userToLogin) {
         User userExists = this.getUserByEmail(userToLogin.getEmail());
-
         if (!userExists.getPassword().equals(userToLogin.getPassword())) {
             throw new NotFoundException();
         }
-
         return userExists;
     }
 
     public User getUserByEmail(String email) {
         return this.userRepository.findByEmail(email).orElseThrow(NotFoundException::new);
     }
-
 }

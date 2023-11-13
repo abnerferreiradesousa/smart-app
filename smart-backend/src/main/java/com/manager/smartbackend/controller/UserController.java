@@ -26,7 +26,7 @@ public class UserController {
                 .body(userCreated);
     }
 
-    @GetMapping
+    @PostMapping("/login")
     public ResponseEntity<User> login(@RequestBody User userToLogin) {
         User userLogged = this.userService.login(userToLogin);
         return ResponseEntity
