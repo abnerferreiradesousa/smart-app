@@ -34,4 +34,11 @@ public class UserController {
                 .body(userLogged);
     }
 
+    @PutMapping("{userId}")
+    public ResponseEntity<User> update(@RequestBody User userToUpdate, @PathVariable String userId) {
+        User userUpdated = this.userService.update(userToUpdate, userId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(userUpdated);
+    }
 }

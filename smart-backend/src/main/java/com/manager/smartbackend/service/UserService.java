@@ -22,13 +22,30 @@ public class UserService {
 
     public User login(User userToLogin) {
         User userExists = this.getUserByEmail(userToLogin.getEmail());
+
         if (!userExists.getPassword().equals(userToLogin.getPassword())) {
             throw new NotFoundException();
         }
+
+        return userExists;
+    }
+
+    public User update(User userToUpdate, String userId) {
+        User userExists = this.getUserById(userId);
+
+        userExists.setEmail(userToUpdate.getEmail());
+        userExists.setName(userToUpdate.getName());
+        userExists.setPassword(userToUpdate.getPassword());
+
         return userExists;
     }
 
     public User getUserByEmail(String email) {
         return this.userRepository.findByEmail(email).orElseThrow(NotFoundException::new);
+    }
+
+    public User getUserById(String userId) {
+        return this.userRepository.findById(Long.valueOf(userId))
+                .orElseThrow(NotFoundException::new);
     }
 }
