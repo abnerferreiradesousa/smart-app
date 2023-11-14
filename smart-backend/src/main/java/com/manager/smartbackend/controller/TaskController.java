@@ -42,4 +42,18 @@ public class TaskController {
                 .status(HttpStatus.CREATED)
                 .body(taskCreated);
     }
+
+    @PutMapping
+    public ResponseEntity<Task> update(@RequestBody Task taskToUpdate) {
+        Task taskUpdated = this.taskService.update(taskToUpdate);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(taskUpdated);
+    }
+
+    @DeleteMapping("{taskId}")
+    public ResponseEntity<Void> remove(@PathVariable String taskId) {
+        this.taskService.remove(taskId);
+        return ResponseEntity.noContent().build();
+    }
 }
