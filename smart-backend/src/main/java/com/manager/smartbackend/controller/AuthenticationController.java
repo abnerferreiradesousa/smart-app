@@ -3,6 +3,7 @@ package com.manager.smartbackend.controller;
 import com.manager.smartbackend.domain.dto.AuthenticationDto;
 import com.manager.smartbackend.domain.dto.UserDto;
 import com.manager.smartbackend.domain.entity.User;
+import com.manager.smartbackend.infra.exception.AlreadyExistsException;
 import com.manager.smartbackend.service.TokenService;
 import com.manager.smartbackend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,11 +12,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 
 @RestController
 @RequestMapping("/auth")
@@ -34,32 +35,29 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody UserDto userDto){
-        UserDetails userDetails = userService.loadUserByUsername(userDto.name());
+    public ResponseEntity<UserDto> register(@RequestBody UserDto userDto){
+        User userDetails = (User) this.userService.loadUserByUsername(userDto.email());
 
-        if(userDetails != null) {
-            String response = "Não foi possível cadastrar, nome de usuário já existe!";
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        if(userDetails != null && userDetails.getEmail().equals(userDto.email())) {
+            throw new AlreadyExistsException("User already exists!");
         }
 
         User user = userService.create(userDto.toEntity());
-        String response = "Pessoa cadastrada com sucesso!";
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        String token = tokenService.generateToken(user);
+        UserDto responseUserDto = new UserDto(user.getId(), user.getName(), user.getEmail(), user.getPassword(), token);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseUserDto);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody AuthenticationDto authenticationDTO){
-        System.out.println(authenticationDTO.name() + authenticationDTO.password() + "checou");
+    public ResponseEntity<UserDto> login(@RequestBody AuthenticationDto authenticationDTO){
         UsernamePasswordAuthenticationToken usernamePassword =
-                new UsernamePasswordAuthenticationToken(authenticationDTO.name(), authenticationDTO.password());
+                new UsernamePasswordAuthenticationToken(authenticationDTO.email(), authenticationDTO.password());
         Authentication auth = authenticationManager.authenticate(usernamePassword);
 
         User user = (User) auth.getPrincipal();
         String token = tokenService.generateToken(user);
-
-        String response = token + " Pessoa autenticada com sucesso! " + auth.getName();
-
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        UserDto responseUserDto = new UserDto(user.getId(), user.getName(), user.getEmail(), user.getPassword(), token);
+        return ResponseEntity.status(HttpStatus.OK).body(responseUserDto);
     }
 
 }

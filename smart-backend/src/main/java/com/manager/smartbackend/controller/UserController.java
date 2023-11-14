@@ -1,5 +1,6 @@
 package com.manager.smartbackend.controller;
 
+import com.manager.smartbackend.domain.dto.UserDto;
 import com.manager.smartbackend.domain.entity.User;
 import com.manager.smartbackend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,22 +25,6 @@ public class UserController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(userFounded);
-    }
-
-    @PostMapping
-    public ResponseEntity<User> create(@RequestBody User userToCreate) {
-        User userCreated = this.userService.create(userToCreate);
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(userCreated);
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity<User> login(@RequestBody User userToLogin) {
-        User userLogged = this.userService.login(userToLogin);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(userLogged);
     }
 
     @PutMapping("{userId}")

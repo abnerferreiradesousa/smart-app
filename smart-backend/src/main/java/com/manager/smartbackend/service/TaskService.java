@@ -22,13 +22,13 @@ public class TaskService {
         this.userRepository = userRepository;
     }
 
-    public List<Task> getTasks(String username) {
-        User user = (User) this.userRepository.findByName(username);
+    public List<Task> getTasks(String email) {
+        User user = (User) this.userRepository.findByEmail(email);
         return user.getTasks();
     }
 
-    public Task create(Task taskToCreate, String username) {
-        User user = (User) this.userRepository.findByName(username);
+    public Task create(Task taskToCreate, String email) {
+        User user = (User) this.userRepository.findByEmail(email);
         taskToCreate.setUser(user);
         return this.taskRepository.save(taskToCreate);
     }
@@ -48,6 +48,6 @@ public class TaskService {
 
     public Task findById(String taskId) {
         return this.taskRepository.findById(Long.valueOf(taskId))
-                .orElseThrow(() -> new NotFoundException("Task Not Found!"));
+                .orElseThrow(() -> new NotFoundException("Task not found!"));
     }
 }

@@ -1,7 +1,6 @@
 package com.manager.smartbackend.controller;
 
 import com.manager.smartbackend.domain.entity.Task;
-import com.manager.smartbackend.domain.entity.User;
 import com.manager.smartbackend.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,8 +25,8 @@ public class TaskController {
     @GetMapping
     public ResponseEntity<List<Task>> getTasks() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        List<Task> tasksFounded = this.taskService.getTasks(username);
+        String email = authentication.getName();
+        List<Task> tasksFounded = this.taskService.getTasks(email);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(tasksFounded);
@@ -36,8 +35,8 @@ public class TaskController {
     @PostMapping
     public ResponseEntity<Task> create(@RequestBody Task taskToCreate) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        Task taskCreated = this.taskService.create(taskToCreate, username);
+        String email = authentication.getName();
+        Task taskCreated = this.taskService.create(taskToCreate, email);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(taskCreated);

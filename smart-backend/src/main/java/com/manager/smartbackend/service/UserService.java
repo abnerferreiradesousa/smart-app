@@ -1,5 +1,6 @@
 package com.manager.smartbackend.service;
 
+import com.manager.smartbackend.domain.dto.UserDto;
 import com.manager.smartbackend.domain.entity.User;
 import com.manager.smartbackend.domain.repository.UserRepository;
 import com.manager.smartbackend.infra.exception.NotFoundException;
@@ -21,24 +22,21 @@ public class UserService implements UserDetailsService {
     }
 
     public User getUserById(String userId) {
-        return this.userRepository.findById(Long.valueOf(userId))
-                .orElseThrow(NotFoundException::new);
+        User user = this.userRepository.findById(Long.valueOf(userId))
+                .orElseThrow(() -> new NotFoundException("User not found!"));
+        return new UserDto(
+                user.getId(),
+                user.getName(),
+                user.getEmail(),
+                user.getPassword(),
+                ""
+        ).toEntity();
     }
 
     public User create(User userToCreate) {
         String hashedPassword = new BCryptPasswordEncoder().encode(userToCreate.getPassword());
         userToCreate.setPassword(hashedPassword);
         return this.userRepository.save(userToCreate);
-    }
-
-    public User login(User userToLogin) {
-        User userExists = this.getUserByEmail(userToLogin.getEmail());
-
-        if (!userExists.getPassword().equals(userToLogin.getPassword())) {
-            throw new NotFoundException();
-        }
-
-        return userExists;
     }
 
     public User update(User userToUpdate, String userId) {
@@ -48,15 +46,17 @@ public class UserService implements UserDetailsService {
         userExists.setName(userToUpdate.getName());
         userExists.setPassword(userToUpdate.getPassword());
 
-        return userExists;
+        return new UserDto(
+                userExists.getId(),
+                userExists.getName(),
+                userExists.getEmail(),
+                userExists.getPassword(),
+                ""
+        ).toEntity();
     }
 
     public void remove(String userId) {
         this.userRepository.deleteById(Long.valueOf(userId));
-    }
-
-    public User getUserByEmail(String email) {
-        return this.userRepository.findByEmail(email).orElseThrow(NotFoundException::new);
     }
 
     /**
@@ -66,13 +66,13 @@ public class UserService implements UserDetailsService {
      * object that comes back may have a username that is of a different case than what
      * was actually requested..
      *
-     * @param username the username identifying the user whose data is required.
+     * @param email the username identifying the user whose data is required.
      * @return a fully populated user record (never <code>null</code>)
      * @throws UsernameNotFoundException if the user could not be found or the user has no
      *                                   GrantedAuthority
      */
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return this.userRepository.findByName(username);
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        return this.userRepository.findByEmail(email);
     }
 }

@@ -1,5 +1,6 @@
 package com.manager.smartbackend.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -27,7 +28,7 @@ public class User implements UserDetails {
     private String password;
 
     @OneToMany(mappedBy = "user")
-    @JsonIgnoreProperties("user")
+    @JsonIgnore
     private List<Task> tasks;
 
     /**
@@ -60,7 +61,7 @@ public class User implements UserDetails {
      */
     @Override
     public String getUsername() {
-        return this.name;
+        return this.email;
     }
 
     /**
